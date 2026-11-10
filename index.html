@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Melati untuk Nadia</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:ital,wght@0,500;1,500&family=Nunito+Sans:wght@400;600&display=swap">
+<style>
+  /* Layout: one melati on the left, the words beside it; stacked on phones. */
+  :root {
+    --sky: #c9ded6;
+    --glow: #e6f1e8;
+    --ink: #17343a;
+    --muted: #41606a;
+    --petal: #ffffff;
+    --petal-base: #e4ecd2;
+    --petal-edge: #b5c9b4;
+    --heart: #d8c66a;
+    --stem: #3f7a55;
+    --leaf: #4f8c60;
+    --display: "Cormorant Infant", Georgia, serif;
+    --body: "Nunito Sans", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --sky: #122d38;
+      --glow: #24505a;
+      --ink: #ecf3ec;
+      --muted: #a4bfc0;
+      --petal: #fbfdf8;
+      --petal-base: #d9e4c8;
+      --petal-edge: #9db5a6;
+      --heart: #e0cd74;
+      --stem: #6ba77e;
+      --leaf: #57936c;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --sky: #122d38;
+    --glow: #24505a;
+    --ink: #ecf3ec;
+    --muted: #a4bfc0;
+    --petal: #fbfdf8;
+    --petal-base: #d9e4c8;
+    --petal-edge: #9db5a6;
+    --heart: #e0cd74;
+    --stem: #6ba77e;
+    --leaf: #57936c;
+    color-scheme: dark;
+  }
+
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--sky);
+    color: var(--ink);
+    font: 400 1.125rem/1.6 var(--body);
+    padding-block: 24px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    box-sizing: border-box;
+  }
+  main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
+    align-items: center;
+    gap: 32px;
+    max-width: 60rem;
+    min-height: 100%;
+    margin-inline: auto;
+  }
+  svg { display: block; width: 100%; max-width: 100%; height: min(82vh, 640px); }
+
+  .words { display: grid; min-width: 0; }
+  .words > * {
+    grid-area: 1 / 1;
+    align-self: center;
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+    transition: opacity .5s ease, visibility .5s;
+  }
+  .words p, .words h1, .words h2 { margin: 0; }
+  h1, h2 {
+    font: 500 clamp(2.5rem, 6vw, 3.75rem)/1.08 var(--display);
+    text-wrap: balance;
+  }
+  .sign { font: italic 500 1.75rem/1.2 var(--display); }
+  .note { font-size: .875rem; line-height: 1.5; color: var(--muted); max-width: 22rem; }
+  .note i { font-family: var(--display); font-size: 1.05rem; }
+
+  button {
+    font: 600 1rem/1 var(--body);
+    padding: 14px 22px;
+    border-radius: 4px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--sky);
+    cursor: pointer;
+  }
+  button.quiet { background: transparent; color: var(--ink); padding: 10px 16px; font-size: .875rem; }
+  button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+  .letter { opacity: 0; visibility: hidden; }
+  .letter:focus { outline: none; }
+  .open .invite { opacity: 0; visibility: hidden; }
+  .open .letter { opacity: 1; visibility: visible; transition-delay: 2.5s; }
+
+  .glow { fill: var(--glow); opacity: 0; transition: opacity .6s ease; }
+  .open .glow { opacity: .8; transition: opacity 1.8s ease 1s; }
+
+  .plant { transform-origin: 205px 530px; transform: scale(.5); transition: transform .6s ease; }
+  .open .plant { transform: scale(1); transition: transform 1.2s cubic-bezier(.3, .7, .3, 1); }
+
+  .stem { fill: none; stroke: var(--stem); stroke-width: 6; stroke-linecap: round; }
+  .leaf { fill: var(--leaf); }
+  .calyx { fill: var(--stem); }
+  .stop-tip { stop-color: var(--petal); }
+  .stop-base { stop-color: var(--petal-base); }
+
+  .petal {
+    fill: url(#petal-shade);
+    stroke: var(--petal-edge);
+    stroke-width: 1;
+    transform: rotate(calc(var(--a) * -1deg)) scale(.26, .6);
+    transition: transform .5s ease;
+  }
+  .open .petal {
+    transform: rotate(0deg) scale(var(--s));
+    transition: transform 1s cubic-bezier(.25, .8, .3, 1) var(--d);
+  }
+  .heart { fill: var(--heart); transform: scale(0); transition: transform .3s ease; }
+  .open .heart { transform: scale(1); transition: transform .6s ease 2.2s; }
+
+  @media (max-width: 720px) {
+    main { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 12px; }
+    svg { height: 46vh; }
+    h1, h2 { font-size: 2.5rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, .open * { transition-duration: .01ms !important; transition-delay: 0s !important; }
+  }
+</style>
+
+<main id="stage">
+  <svg viewBox="0 0 400 540" role="img" aria-label="Setangkai melati putih yang mekar">
+    <defs>
+      <linearGradient id="petal-shade" x1="0" y1="1" x2="0" y2="0">
+        <stop class="stop-base" offset="0"></stop>
+        <stop class="stop-tip" offset=".55"></stop>
+      </linearGradient>
+    </defs>
+    <circle class="glow" cx="200" cy="165" r="170"></circle>
+    <g class="plant">
+      <path class="stem" d="M205 530 C 240 430, 170 320, 200 165"></path>
+      <path class="leaf" d="M207 420 C 250 372, 306 372, 338 396 C 300 428, 246 434, 207 420Z"></path>
+      <path class="leaf" d="M195 340 C 160 298, 108 292, 72 312 C 104 348, 158 354, 195 340Z"></path>
+      <g transform="translate(200 165)">
+        <path class="calyx" d="M-11 -2 L0 -22 L11 -2 C 6 12, -6 12, -11 -2Z"></path>
+        <g id="petals"></g>
+        <circle class="heart" r="9"></circle>
+      </g>
+    </g>
+  </svg>
+
+  <div class="words">
+    <div class="invite">
+      <h1 id="invite-title"></h1>
+      <button id="open" type="button">Buka bunganya</button>
+    </div>
+    <div class="letter" id="letter" tabindex="-1">
+      <h2 id="letter-title"></h2>
+      <p id="message"></p>
+      <p class="sign" id="sender"></p>
+      <p class="note"><i>Jasminum sambac</i>, melati putih. Kelopaknya mulai terbuka menjelang malam, saat wanginya paling kuat.</p>
+      <button class="quiet" id="replay" type="button">Mekarkan lagi</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  const isi = {
+    penerima: "Nadia",
+    pengirim: "Saad",
+    judul: "Aku kangen kamu.",
+    pesan: "Hari ini kepikiran kamu lagi, jadi aku kirim bunga ini. Semoga kamu senyum waktu bukanya. Cepat ketemu, ya."
+  };
+
+  document.getElementById("invite-title").textContent = isi.penerima + ", ada bunga buat kamu.";
+  document.getElementById("letter-title").textContent = isi.judul;
+  document.getElementById("message").textContent = isi.pesan;
+  document.getElementById("sender").textContent = "Dari " + isi.pengirim;
+
+  const PETAL = "M0 0 C -30 -28, -34 -82, 0 -108 C 34 -82, 30 -28, 0 0Z";
+  const layers = [
+    { count: 9, scale: 1, turn: 0, start: 1000 },
+    { count: 7, scale: .74, turn: 20, start: 1350 },
+    { count: 5, scale: .48, turn: 10, start: 1700 }
+  ];
+
+  let petals = "";
+  layers.forEach(({ count, scale, turn, start }) => {
+    for (let i = 0; i < count; i++) {
+      const raw = (360 / count) * i + turn;
+      const angle = raw > 180 ? raw - 360 : raw;
+      petals += `<g transform="rotate(${angle})"><path class="petal" d="${PETAL}" style="--a:${angle};--s:${scale};--d:${start + i * 50}ms"></path></g>`;
+    }
+  });
+  document.getElementById("petals").innerHTML = petals;
+
+  const stage = document.getElementById("stage");
+  const letter = document.getElementById("letter");
+  let focusTimer;
+
+  function bloom() {
+    stage.classList.add("open");
+    clearTimeout(focusTimer);
+    focusTimer = setTimeout(() => letter.focus({ preventScroll: true }), 2600);
+  }
+
+  document.getElementById("open").addEventListener("click", bloom);
+  document.getElementById("replay").addEventListener("click", () => {
+    stage.classList.remove("open");
+    clearTimeout(focusTimer);
+    focusTimer = setTimeout(bloom, 900);
+  });
+</script>
