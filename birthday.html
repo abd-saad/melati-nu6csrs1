@@ -97,6 +97,8 @@
   }
   .lead { color: var(--muted); }
   .sign { font: italic 500 1.75rem/1.2 var(--display); }
+  .date { font: 600 .8125rem/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .age { font: 500 34px var(--display); fill: var(--box); }
 
   button {
     font: 600 1rem/1 var(--body);
@@ -201,13 +203,13 @@
       <g class="sprinkle">
         <line x1="112" y1="476" x2="120" y2="470" stroke="#8fb8de"></line>
         <line x1="150" y1="482" x2="158" y2="486" stroke="#efbd4a"></line>
-        <line x1="196" y1="474" x2="204" y2="478" stroke="#8fb8de"></line>
         <line x1="240" y1="484" x2="248" y2="478" stroke="#efbd4a"></line>
         <line x1="282" y1="474" x2="290" y2="480" stroke="#8fb8de"></line>
         <line x1="160" y1="388" x2="168" y2="384" stroke="#f2a7b6"></line>
         <line x1="204" y1="392" x2="212" y2="396" stroke="#8fb8de"></line>
         <line x1="240" y1="386" x2="246" y2="392" stroke="#efbd4a"></line>
       </g>
+      <text class="age" id="age" x="200" y="491" text-anchor="middle"></text>
       <!-- candles -->
       <rect class="candle" x="163" y="274" width="12" height="50" rx="3"></rect>
       <rect class="candle alt" x="194" y="262" width="12" height="62" rx="3"></rect>
@@ -243,15 +245,17 @@
 
   <div class="words">
     <div class="invite">
+      <p class="date"></p>
       <h1 id="invite-title"></h1>
       <button id="open" type="button">Buka kadonya</button>
     </div>
     <div class="wish" id="wish" tabindex="-1">
       <h2>Bikin permintaan dulu.</h2>
-      <p class="lead">Pejamkan mata, pikirkan satu hal yang kamu mau, lalu tiup lilinnya.</p>
+      <p class="lead" id="wish-lead"></p>
       <button id="blow" type="button">Tiup lilin</button>
     </div>
     <div class="letter" id="letter" tabindex="-1">
+      <p class="date"></p>
       <h2 id="letter-title"></h2>
       <p id="message"></p>
       <p class="sign" id="sender"></p>
@@ -265,11 +269,18 @@
   const isi = {
     penerima: "Nadia",
     pengirim: "Saad",
+    tanggal: "16 November 2026",
+    tahunLahir: 2003,
+    tahunRayakan: 2026,
     pesan: "Semoga tahun ini isinya banyak hal baik: sehat, bahagia, dan semua yang kamu mau pelan-pelan jadi nyata. Makasih udah jadi kamu. Aku senang bisa ikut merayakan hari ini."
   };
 
+  const umur = isi.tahunRayakan - isi.tahunLahir;
+  document.querySelectorAll(".date").forEach(el => el.textContent = isi.tanggal);
+  document.getElementById("age").textContent = umur;
+  document.getElementById("wish-lead").textContent = umur + " tahun hari ini. Pejamkan mata, pikirkan satu hal yang kamu mau, lalu tiup lilinnya.";
   document.getElementById("invite-title").textContent = isi.penerima + ", ada kado buat kamu.";
-  document.getElementById("letter-title").textContent = "Selamat ulang tahun, " + isi.penerima + ".";
+  document.getElementById("letter-title").textContent = "Selamat ulang tahun ke-" + umur + ", " + isi.penerima + ".";
   document.getElementById("message").textContent = isi.pesan;
   document.getElementById("sender").textContent = "Dari " + isi.pengirim;
 
