@@ -76,7 +76,8 @@
     min-height: 100%;
     margin-inline: auto;
   }
-  svg { display: block; width: 100%; max-width: 100%; height: min(82vh, 640px); overflow: visible; }
+  :root { --scene-h: min(82vh, 640px); }
+  svg { display: block; width: 100%; max-width: 100%; height: var(--scene-h); overflow: visible; }
 
   .words { display: grid; min-width: 0; }
   .words > * {
@@ -174,11 +175,46 @@
     100% { opacity: 0; transform: translateY(-40px); }
   }
 
+  /* Photo: drops in over the cake after the candles are out. */
+  .scene { position: relative; min-width: 0; }
+  .blown svg { opacity: .35; transition: opacity .8s ease 1s; }
+  svg { transition: opacity .4s ease; }
+  .polaroid {
+    position: absolute;
+    left: 50%; top: 50%;
+    /* Keep the whole card (photo 5:4 + caption + padding) inside the scene height. */
+    width: min(58%, 300px, calc((var(--scene-h) - 76px) * .8));
+    box-sizing: border-box;
+    margin: 0;
+    padding: 12px 12px 0;
+    background: #fffdf9;
+    box-shadow: 0 18px 40px rgba(58, 31, 43, .22), 0 2px 6px rgba(58, 31, 43, .12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -140%) rotate(8deg);
+    transition: transform .5s ease, opacity .4s ease, visibility .4s;
+  }
+  .blown .polaroid {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) rotate(-4deg);
+    transition: transform 1.1s cubic-bezier(.25, 1.25, .4, 1) 1s, opacity .4s ease 1s, visibility 0s 1s;
+  }
+  .polaroid img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; background: #eadfd6; }
+  .polaroid figcaption {
+    padding: 12px 0 14px;
+    text-align: center;
+    color: #6d4c58;
+    font: italic 500 1.25rem/1 var(--display);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
   canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 
   @media (max-width: 720px) {
     main { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 12px; }
-    svg { height: 46vh; }
+    :root { --scene-h: 46vh; }
     h1, h2 { font-size: 2.5rem; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -187,6 +223,7 @@
 </style>
 
 <main id="stage">
+  <div class="scene">
   <svg viewBox="0 0 400 540" role="img" aria-label="Kotak kado yang terbuka dan berisi kue ulang tahun dengan lilin">
     <circle class="glow" cx="200" cy="340" r="185"></circle>
 
@@ -242,6 +279,11 @@
       </g>
     </g>
   </svg>
+  <figure class="polaroid">
+    <img src="https://drive.google.com/thumbnail?id=1735yMDQwRgQ0vyBzj57E8ohsldMr1vWl&amp;sz=w1000" alt="Foto kita berdua" width="600" height="750" referrerpolicy="no-referrer">
+    <figcaption class="date"></figcaption>
+  </figure>
+  </div>
 
   <div class="words">
     <div class="invite">
@@ -280,7 +322,7 @@
   document.getElementById("age").textContent = umur;
   document.getElementById("wish-lead").textContent = umur + " tahun hari ini. Pejamkan mata, pikirkan satu hal yang kamu mau, lalu tiup lilinnya.";
   document.getElementById("invite-title").textContent = isi.penerima + ", ada kado buat kamu.";
-  document.getElementById("letter-title").textContent = "Selamat ulang tahun ke-" + umur + ", " + isi.penerima + ".";
+  document.getElementById("letter-title").textContent = "Selamat ulang tahun ke‑" + umur + ", " + isi.penerima + ".";
   document.getElementById("message").textContent = isi.pesan;
   document.getElementById("sender").textContent = "Dari " + isi.pengirim;
 
