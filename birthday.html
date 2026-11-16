@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kado untuk Nadia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:ital,wght@0,500;1,500&family=Nunito+Sans:wght@400;600&display=swap">
+<style>
+  /* Flow: closed gift -> (open) cake rises from the box -> (blown) candles out, confetti, letter. */
+  :root {
+    --bg: #f6e6db;
+    --glow: #fdf3ea;
+    --ink: #3a1f2b;
+    --muted: #6d4c58;
+    --box: #c9505f;
+    --box-shade: #a63e4e;
+    --ribbon: #efbd4a;
+    --ribbon-shade: #d29f2f;
+    --plate: #e6d3c5;
+    --sponge: #f1d3a8;
+    --sponge-shade: #e2bb87;
+    --frost: #fff9f2;
+    --frost-pink: #f2a7b6;
+    --candle: #8fb8de;
+    --candle-alt: #f2a7b6;
+    --flame: #ffad42;
+    --flame-core: #fff1b8;
+    --smoke: #9a8a90;
+    --display: "Cormorant Infant", Georgia, serif;
+    --body: "Nunito Sans", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #22151c;
+      --glow: #3b2530;
+      --ink: #f6e9e4;
+      --muted: #c9adb6;
+      --box: #d65d6e;
+      --box-shade: #b0485a;
+      --plate: #4a3540;
+      --smoke: #b3a2a8;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #22151c;
+    --glow: #3b2530;
+    --ink: #f6e9e4;
+    --muted: #c9adb6;
+    --box: #d65d6e;
+    --box-shade: #b0485a;
+    --plate: #4a3540;
+    --smoke: #b3a2a8;
+    color-scheme: dark;
+  }
+
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 1.125rem/1.6 var(--body);
+    padding-block: 24px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
+    align-items: center;
+    gap: 32px;
+    max-width: 60rem;
+    min-height: 100%;
+    margin-inline: auto;
+  }
+  svg { display: block; width: 100%; max-width: 100%; height: min(82vh, 640px); overflow: visible; }
+
+  .words { display: grid; min-width: 0; }
+  .words > * {
+    grid-area: 1 / 1;
+    align-self: center;
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .5s ease, visibility .5s;
+  }
+  .words > *:focus { outline: none; }
+  .words p, .words h1, .words h2 { margin: 0; }
+  h1, h2 {
+    font: 500 clamp(2.5rem, 6vw, 3.75rem)/1.08 var(--display);
+    text-wrap: balance;
+  }
+  .lead { color: var(--muted); }
+  .sign { font: italic 500 1.75rem/1.2 var(--display); }
+
+  button {
+    font: 600 1rem/1 var(--body);
+    padding: 14px 22px;
+    border-radius: 4px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+    cursor: pointer;
+  }
+  button.quiet { background: transparent; color: var(--ink); padding: 10px 16px; font-size: .875rem; }
+  button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+  /* Which words panel shows at each step. */
+  main:not(.open) .invite,
+  .open:not(.blown) .wish,
+  .blown .letter { opacity: 1; visibility: visible; }
+  .open:not(.blown) .wish { transition-delay: 1.6s; }
+  .blown .letter { transition-delay: 1.4s; }
+
+  .glow { fill: var(--glow); opacity: .5; transition: opacity 1s ease; }
+  .open .glow { opacity: .9; }
+
+  /* Gift box */
+  .box-body { fill: var(--box); }
+  .box-side { fill: var(--box-shade); }
+  .ribbon { fill: var(--ribbon); }
+  .ribbon-shade { fill: var(--ribbon-shade); }
+  .gift { transform-origin: 200px 500px; transition: transform .6s ease, opacity .6s ease; }
+  main:not(.open) .gift { animation: wiggle 3.2s ease-in-out infinite; }
+  .open .gift { opacity: 0; transform: translateY(30px) scale(.9); transition-delay: .45s; }
+  .lid { transform-origin: 200px 320px; transition: transform .7s cubic-bezier(.3, .7, .3, 1), opacity .6s ease; }
+  .open .lid { transform: translate(60px, -300px) rotate(28deg); opacity: 0; }
+  @keyframes wiggle {
+    0%, 78%, 100% { transform: rotate(0); }
+    82% { transform: rotate(-3deg); }
+    86% { transform: rotate(3deg); }
+    90% { transform: rotate(-2deg); }
+    94% { transform: rotate(1deg); }
+  }
+
+  /* Cake */
+  .cake { transform-origin: 200px 500px; transform: scale(.35); opacity: 0; transition: transform .5s ease, opacity .4s ease; }
+  .open .cake { transform: scale(1); opacity: 1; transition: transform 1s cubic-bezier(.3, 1.3, .4, 1) .7s, opacity .4s ease .7s; }
+  .plate { fill: var(--plate); }
+  .sponge { fill: var(--sponge); }
+  .sponge-shade { fill: var(--sponge-shade); }
+  .frost { fill: var(--frost); }
+  .frost-pink { fill: var(--frost-pink); }
+  .sprinkle { stroke-width: 4; stroke-linecap: round; }
+  .candle { fill: var(--candle); }
+  .candle.alt { fill: var(--candle-alt); }
+  .wick { stroke: var(--ink); stroke-width: 2; stroke-linecap: round; }
+
+  .flame { transform-box: fill-box; transform-origin: 50% 100%; cursor: pointer; transition: transform .35s ease, opacity .35s ease; }
+  .flame .outer { fill: var(--flame); }
+  .flame .inner { fill: var(--flame-core); }
+  .open .flame { animation: flicker 1.1s ease-in-out infinite alternate; }
+  .flame:nth-of-type(2) { animation-delay: -.4s; }
+  .flame:nth-of-type(3) { animation-delay: -.8s; }
+  .blown .flame { animation: none; transform: scale(0); opacity: 0; }
+  @keyframes flicker {
+    0% { transform: scale(1, 1) rotate(-2deg); }
+    50% { transform: scale(.9, 1.08) rotate(2deg); }
+    100% { transform: scale(1.05, .94) rotate(-1deg); }
+  }
+
+  .smoke { fill: none; stroke: var(--smoke); stroke-width: 3; stroke-linecap: round; opacity: 0; }
+  .blown .smoke { animation: rise 1.8s ease-out .2s forwards; }
+  @keyframes rise {
+    0% { opacity: 0; transform: translateY(0); }
+    25% { opacity: .7; }
+    100% { opacity: 0; transform: translateY(-40px); }
+  }
+
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+  @media (max-width: 720px) {
+    main { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 12px; }
+    svg { height: 46vh; }
+    h1, h2 { font-size: 2.5rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, .open *, .blown * { transition-duration: .01ms !important; transition-delay: 0s !important; animation: none !important; }
+  }
+</style>
+
+<main id="stage">
+  <svg viewBox="0 0 400 540" role="img" aria-label="Kotak kado yang terbuka dan berisi kue ulang tahun dengan lilin">
+    <circle class="glow" cx="200" cy="340" r="185"></circle>
+
+    <g class="cake">
+      <ellipse class="plate" cx="200" cy="500" rx="150" ry="16"></ellipse>
+      <!-- bottom tier -->
+      <rect class="sponge" x="85" y="400" width="230" height="96" rx="10"></rect>
+      <rect class="sponge-shade" x="85" y="452" width="230" height="10"></rect>
+      <path class="frost-pink" d="M85 410 Q85 400 95 400 H305 Q315 400 315 410 V422 Q305 438 295 422 Q282 444 268 422 Q254 440 240 422 Q226 446 212 422 Q198 438 184 422 Q170 444 156 422 Q142 440 128 422 Q114 446 100 422 Q92 434 85 422Z"></path>
+      <!-- top tier -->
+      <rect class="sponge" x="130" y="322" width="140" height="82" rx="10"></rect>
+      <rect class="sponge-shade" x="130" y="368" width="140" height="9"></rect>
+      <path class="frost" d="M130 332 Q130 322 140 322 H260 Q270 322 270 332 V344 Q262 358 252 344 Q240 364 228 344 Q216 360 204 344 Q192 364 180 344 Q168 360 156 344 Q146 362 138 344 Q133 352 130 344Z"></path>
+      <g class="sprinkle">
+        <line x1="112" y1="476" x2="120" y2="470" stroke="#8fb8de"></line>
+        <line x1="150" y1="482" x2="158" y2="486" stroke="#efbd4a"></line>
+        <line x1="196" y1="474" x2="204" y2="478" stroke="#8fb8de"></line>
+        <line x1="240" y1="484" x2="248" y2="478" stroke="#efbd4a"></line>
+        <line x1="282" y1="474" x2="290" y2="480" stroke="#8fb8de"></line>
+        <line x1="160" y1="388" x2="168" y2="384" stroke="#f2a7b6"></line>
+        <line x1="204" y1="392" x2="212" y2="396" stroke="#8fb8de"></line>
+        <line x1="240" y1="386" x2="246" y2="392" stroke="#efbd4a"></line>
+      </g>
+      <!-- candles -->
+      <rect class="candle" x="163" y="274" width="12" height="50" rx="3"></rect>
+      <rect class="candle alt" x="194" y="262" width="12" height="62" rx="3"></rect>
+      <rect class="candle" x="225" y="274" width="12" height="50" rx="3"></rect>
+      <line class="wick" x1="169" y1="274" x2="169" y2="266"></line>
+      <line class="wick" x1="200" y1="262" x2="200" y2="254"></line>
+      <line class="wick" x1="231" y1="274" x2="231" y2="266"></line>
+      <g id="flames">
+        <g class="flame"><path class="outer" d="M169 268 C 157 256, 162 242, 169 230 C 176 242, 181 256, 169 268Z"></path><path class="inner" d="M169 266 C 164 259, 166 252, 169 246 C 172 252, 174 259, 169 266Z"></path></g>
+        <g class="flame"><path class="outer" d="M200 256 C 188 244, 193 230, 200 218 C 207 230, 212 244, 200 256Z"></path><path class="inner" d="M200 254 C 195 247, 197 240, 200 234 C 203 240, 205 247, 200 254Z"></path></g>
+        <g class="flame"><path class="outer" d="M231 268 C 219 256, 224 242, 231 230 C 238 242, 243 256, 231 268Z"></path><path class="inner" d="M231 266 C 226 259, 228 252, 231 246 C 234 252, 236 259, 231 266Z"></path></g>
+      </g>
+      <path class="smoke" d="M169 264 C 162 252, 176 244, 168 230"></path>
+      <path class="smoke" d="M200 252 C 193 240, 207 232, 199 218"></path>
+      <path class="smoke" d="M231 264 C 224 252, 238 244, 230 230"></path>
+    </g>
+
+    <g class="gift">
+      <rect class="box-body" x="105" y="336" width="190" height="164" rx="4"></rect>
+      <rect class="box-side" x="105" y="336" width="190" height="14"></rect>
+      <rect class="ribbon" x="188" y="336" width="24" height="164"></rect>
+      <g class="lid">
+        <rect class="box-body" x="92" y="300" width="216" height="42" rx="5"></rect>
+        <rect class="ribbon" x="186" y="300" width="28" height="42"></rect>
+        <path class="ribbon" d="M200 300 C 168 262, 128 270, 140 294 C 148 308, 180 304, 200 300Z"></path>
+        <path class="ribbon" d="M200 300 C 232 262, 272 270, 260 294 C 252 308, 220 304, 200 300Z"></path>
+        <path class="ribbon-shade" d="M200 300 C 186 312, 176 326, 172 336 L184 334 C 188 322, 194 312, 200 300Z"></path>
+        <path class="ribbon-shade" d="M200 300 C 214 312, 224 326, 228 336 L216 334 C 212 322, 206 312, 200 300Z"></path>
+        <circle class="ribbon-shade" cx="200" cy="300" r="10"></circle>
+      </g>
+    </g>
+  </svg>
+
+  <div class="words">
+    <div class="invite">
+      <h1 id="invite-title"></h1>
+      <button id="open" type="button">Buka kadonya</button>
+    </div>
+    <div class="wish" id="wish" tabindex="-1">
+      <h2>Bikin permintaan dulu.</h2>
+      <p class="lead">Pejamkan mata, pikirkan satu hal yang kamu mau, lalu tiup lilinnya.</p>
+      <button id="blow" type="button">Tiup lilin</button>
+    </div>
+    <div class="letter" id="letter" tabindex="-1">
+      <h2 id="letter-title"></h2>
+      <p id="message"></p>
+      <p class="sign" id="sender"></p>
+      <button class="quiet" id="replay" type="button">Ulangi dari awal</button>
+    </div>
+  </div>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+  const isi = {
+    penerima: "Nadia",
+    pengirim: "Saad",
+    pesan: "Semoga tahun ini isinya banyak hal baik: sehat, bahagia, dan semua yang kamu mau pelan-pelan jadi nyata. Makasih udah jadi kamu. Aku senang bisa ikut merayakan hari ini."
+  };
+
+  document.getElementById("invite-title").textContent = isi.penerima + ", ada kado buat kamu.";
+  document.getElementById("letter-title").textContent = "Selamat ulang tahun, " + isi.penerima + ".";
+  document.getElementById("message").textContent = isi.pesan;
+  document.getElementById("sender").textContent = "Dari " + isi.pengirim;
+
+  const stage = document.getElementById("stage");
+  const wish = document.getElementById("wish");
+  const letter = document.getElementById("letter");
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let timer;
+
+  function later(fn, ms) { clearTimeout(timer); timer = setTimeout(fn, reduceMotion ? 0 : ms); }
+
+  function openGift() {
+    stage.classList.add("open");
+    later(() => wish.focus({ preventScroll: true }), 1700);
+  }
+
+  function blowOut() {
+    if (!stage.classList.contains("open") || stage.classList.contains("blown")) return;
+    stage.classList.add("blown");
+    if (!reduceMotion) setTimeout(confetti, 350);
+    later(() => letter.focus({ preventScroll: true }), 1500);
+  }
+
+  document.getElementById("open").addEventListener("click", openGift);
+  document.getElementById("blow").addEventListener("click", blowOut);
+  document.getElementById("flames").addEventListener("click", blowOut);
+  document.getElementById("replay").addEventListener("click", () => {
+    stage.classList.remove("open", "blown");
+    later(() => document.getElementById("open").focus({ preventScroll: true }), 600);
+  });
+
+  // Confetti burst on a full-screen canvas.
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  const colors = ["#c9505f", "#efbd4a", "#8fb8de", "#f2a7b6", "#7fb88f", "#ffffff"];
+  let pieces = [], frame;
+
+  function confetti() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = innerWidth * dpr;
+    canvas.height = innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const origin = stage.querySelector("svg").getBoundingClientRect();
+    const ox = origin.left + origin.width / 2, oy = origin.top + origin.height * .45;
+    pieces = Array.from({ length: 170 }, () => {
+      const a = Math.random() * Math.PI * 2, v = 4 + Math.random() * 9;
+      return {
+        x: ox, y: oy,
+        vx: Math.cos(a) * v, vy: Math.sin(a) * v - 6,
+        w: 6 + Math.random() * 6, h: 4 + Math.random() * 6,
+        r: Math.random() * 6, vr: (Math.random() - .5) * .3,
+        c: colors[(Math.random() * colors.length) | 0], life: 0
+      };
+    });
+    cancelAnimationFrame(frame);
+    tick();
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    pieces.forEach(p => {
+      p.life++;
+      p.vy += .22; p.vx *= .985; p.vy *= .985;
+      p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.globalAlpha = Math.max(0, 1 - p.life / 220);
+      ctx.fillStyle = p.c;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.life * .1)));
+      ctx.restore();
+    });
+    pieces = pieces.filter(p => p.life < 220 && p.y < innerHeight + 40);
+    if (pieces.length) frame = requestAnimationFrame(tick);
+    else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  }
+</script>
