@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ajakan untuk Nadia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:ital,wght@0,500;1,500&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+  /* Flow: ask (Iya / Nggak that runs away) -> yay -> pick activity + day -> ticket to share. */
+  :root {
+    --bg: #f6e6db;
+    --glow: #fdf3ea;
+    --card: #fffaf5;
+    --ink: #3a1f2b;
+    --muted: #6d4c58;
+    --line: #e7cfc2;
+    --accent: #c9505f;
+    --accent-ink: #fff8f4;
+    --accent-soft: #f6d4d8;
+    --gold: #efbd4a;
+    --cup: #8fb8de;
+    --cup-alt: #f2a7b6;
+    --display: "Cormorant Infant", Georgia, serif;
+    --body: "Nunito Sans", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #22151c;
+      --glow: #3b2530;
+      --card: #2e1d25;
+      --ink: #f6e9e4;
+      --muted: #c9adb6;
+      --line: #4a3540;
+      --accent: #e06577;
+      --accent-ink: #22151c;
+      --accent-soft: #4a2a35;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #22151c;
+    --glow: #3b2530;
+    --card: #2e1d25;
+    --ink: #f6e9e4;
+    --muted: #c9adb6;
+    --line: #4a3540;
+    --accent: #e06577;
+    --accent-ink: #22151c;
+    --accent-soft: #4a2a35;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: radial-gradient(120% 80% at 50% 0%, var(--glow), var(--bg) 70%) fixed, var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.5;
+    display: grid;
+    place-items: center;
+    padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+  }
+  main { width: 100%; max-width: 560px; text-align: center; }
+  section[hidden] { display: none; }
+  section { animation: rise .5s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(2rem, 7vw, 2.9rem);
+    line-height: 1.1;
+    margin: .4em 0 .3em;
+    text-wrap: balance;
+  }
+  h2 { font-family: var(--display); font-weight: 500; font-size: 1.5rem; margin: 1.2em 0 .5em; }
+  p.lead { color: var(--muted); margin: 0 auto 1.6em; max-width: 34ch; text-wrap: pretty; }
+
+  .art { width: min(220px, 60vw); height: auto; display: block; margin: 0 auto; }
+  .steam { animation: steam 3s ease-in-out infinite; transform-origin: center bottom; }
+  .steam:nth-of-type(2) { animation-delay: 1.2s; }
+  @keyframes steam { 0%,100% { opacity: .25; transform: translateY(0); } 50% { opacity: .8; transform: translateY(-6px); } }
+  .heart-float { animation: bob 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes bob { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-5px) scale(1.08); } }
+
+  .choices { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; min-height: 72px; }
+  button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .btn {
+    min-height: 48px;
+    padding: 0 28px;
+    border-radius: 999px;
+    border: 1.5px solid var(--accent);
+    font-weight: 700;
+    font-size: 1rem;
+    transition: transform .25s ease, background .2s, opacity .2s;
+  }
+  .btn-yes { background: var(--accent); color: var(--accent-ink); }
+  .btn-yes:hover { filter: brightness(1.05); }
+  .btn-no { background: transparent; color: var(--accent); touch-action: manipulation; }
+  .btn-no.flee { position: fixed; z-index: 5; transition: left .25s ease, top .25s ease, opacity .3s; }
+  .btn-ghost { background: transparent; color: var(--muted); border-color: var(--line); font-weight: 600; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn:focus-visible, .opt:focus-visible, .chip:focus-visible, textarea:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (min-width: 520px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .opt {
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    padding: 14px 10px;
+    color: var(--ink);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    min-height: 92px;
+    transition: border-color .2s, background .2s, transform .15s;
+  }
+  .opt .ico { font-size: 1.7rem; line-height: 1; }
+  .opt .lbl { font-weight: 600; font-size: .95rem; }
+  .opt:active, .chip:active { transform: scale(.97); }
+  .opt[aria-pressed="true"], .chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .chip {
+    min-height: 44px; padding: 0 16px; border-radius: 999px;
+    border: 1.5px solid var(--line); background: var(--card); color: var(--ink); font-weight: 600;
+  }
+  textarea {
+    width: 100%; min-height: 72px; resize: vertical;
+    background: var(--card); color: var(--ink);
+    border: 1.5px solid var(--line); border-radius: 14px;
+    padding: 12px 14px; font: inherit;
+  }
+  textarea::placeholder { color: var(--muted); opacity: .8; }
+  .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
+
+  .ticket {
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 20px;
+    text-align: left;
+    position: relative;
+    margin: 8px auto 0;
+    max-width: 420px;
+    box-shadow: 0 10px 30px -18px rgba(58, 31, 43, .45);
+  }
+  .ticket-top { padding: 22px 22px 18px; }
+  .ticket-top .eyebrow { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .ticket-top .names { font-family: var(--display); font-size: 2rem; line-height: 1.1; margin: 6px 0 0; }
+  .tear { border-top: 2px dashed var(--line); position: relative; }
+  .tear::before, .tear::after {
+    content: ""; position: absolute; top: -12px; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--bg); border: 1.5px solid var(--line);
+  }
+  .tear::before { left: -12px; clip-path: inset(0 0 0 50%); }
+  .tear::after { right: -12px; clip-path: inset(0 50% 0 0); }
+  .ticket-body { padding: 18px 22px 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+  .field .k { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .field .v { font-weight: 700; overflow-wrap: anywhere; }
+  .field.full { grid-column: 1 / -1; }
+  .ticket-note { color: var(--muted); font-size: .9rem; margin-top: 14px; }
+
+  .hearts { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 10; }
+  .hearts span {
+    position: absolute; bottom: -40px; font-size: 22px;
+    animation: up var(--d, 3s) ease-in forwards;
+  }
+  @keyframes up {
+    to { transform: translate(var(--x, 0), -110vh) rotate(var(--r, 20deg)); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .hearts { display: none; }
+  }
+</style>
+
+<main>
+  <!-- 1. Ask -->
+  <section id="ask">
+    <svg class="art" viewBox="0 0 220 150" aria-hidden="true">
+      <path class="heart-float" d="M110 34 C102 22 84 26 86 40 C88 52 110 62 110 62 C110 62 132 52 134 40 C136 26 118 22 110 34Z" fill="var(--accent)"/>
+      <path class="steam" d="M62 70 q-6 -10 0 -20" fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
+      <path class="steam" d="M158 70 q6 -10 0 -20" fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M36 78 h52 v28 a22 22 0 0 1 -22 22 h-8 a22 22 0 0 1 -22 -22z" fill="var(--cup)"/>
+      <path d="M88 86 a10 10 0 0 1 0 20" fill="none" stroke="var(--cup)" stroke-width="6"/>
+      <path d="M132 78 h52 v28 a22 22 0 0 1 -22 22 h-8 a22 22 0 0 1 -22 -22z" fill="var(--cup-alt)"/>
+      <path d="M132 86 a10 10 0 0 0 0 20" fill="none" stroke="var(--cup-alt)" stroke-width="6"/>
+      <ellipse cx="110" cy="134" rx="92" ry="6" fill="var(--line)"/>
+    </svg>
+    <h1 id="ask-title"></h1>
+    <p class="lead" id="ask-lead"></p>
+    <div class="choices">
+      <button class="btn btn-yes" id="yes" type="button">Iya, mau!</button>
+      <button class="btn btn-no" id="no" type="button">Nggak</button>
+    </div>
+  </section>
+
+  <!-- 2. Pick -->
+  <section id="pick" hidden>
+    <h1>Yeay! 🥰</h1>
+    <p class="lead">Sekarang kamu yang pilih. Mau ngapain, dan kapan?</p>
+    <h2>Mau ke mana?</h2>
+    <div class="grid" id="acts"></div>
+    <h2>Kapan?</h2>
+    <div class="chips" id="days"></div>
+    <h2>Ada request?</h2>
+    <textarea id="note" maxlength="200" placeholder="Opsional. Misal: tempatnya yang ada dessert-nya ya"></textarea>
+    <div class="actions">
+      <button class="btn btn-yes" id="next" type="button" disabled>Lanjut</button>
+    </div>
+  </section>
+
+  <!-- 3. Ticket -->
+  <section id="done" hidden>
+    <h1 id="done-title"></h1>
+    <div class="ticket" id="ticket">
+      <div class="ticket-top">
+        <div class="eyebrow">Tiket ngedate · berlaku 1×</div>
+        <p class="names" id="t-names"></p>
+      </div>
+      <div class="tear"></div>
+      <div class="ticket-body">
+        <div class="field"><div class="k">Acara</div><div class="v" id="t-act"></div></div>
+        <div class="field"><div class="k">Kapan</div><div class="v" id="t-day"></div></div>
+        <div class="field full" id="t-note-wrap" hidden><div class="k">Request</div><div class="v" id="t-note"></div></div>
+        <div class="field full"><div class="k">Yang traktir</div><div class="v" id="t-payer"></div></div>
+      </div>
+    </div>
+    <p class="ticket-note">Screenshot tiketnya, atau langsung kirim ke aku.</p>
+    <div class="actions">
+      <button class="btn btn-yes" id="send" type="button"></button>
+      <button class="btn btn-ghost" id="back" type="button">Ubah pilihan</button>
+    </div>
+  </section>
+</main>
+<div class="hearts" id="hearts" aria-hidden="true"></div>
+
+<script>
+  const isi = {
+    penerima: "Nadia",
+    pengirim: "Saad",
+    ajakan: "mau jalan bareng aku?",
+    lead: "Nggak harus jauh, nggak harus mewah. Yang penting bareng kamu.",
+    aktivitas: [
+      { ico: "🍝", lbl: "Makan malam" },
+      { ico: "🎬", lbl: "Nonton" },
+      { ico: "☕", lbl: "Ngopi" },
+      { ico: "🌇", lbl: "Jalan sore" },
+      { ico: "🍢", lbl: "Kulineran" },
+      { ico: "✨", lbl: "Terserah kamu" }
+    ],
+    hari: ["Jumat malam", "Sabtu", "Minggu", "Kamu yang tentuin"],
+    tolak: ["Yakin?", "Coba pikir lagi", "Masa sih 🥺", "Sekali lagi deh", "Tombolnya capek", "Udah, pencet Iya aja"]
+  };
+
+  const $ = id => document.getElementById(id);
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  $("ask-title").textContent = isi.penerima + ", " + isi.ajakan;
+  $("ask-lead").textContent = isi.lead;
+  $("done-title").textContent = "Deal ya, " + isi.penerima + ".";
+  $("t-names").textContent = isi.penerima + " × " + isi.pengirim;
+  $("t-payer").textContent = isi.pengirim + " (udah pasti)";
+  $("send").textContent = "Kirim ke " + isi.pengirim;
+
+  function show(id) {
+    ["ask", "pick", "done"].forEach(s => $(s).hidden = s !== id);
+    scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  }
+
+  // --- Ask: the "Nggak" button runs away, "Iya" grows ---
+  const yes = $("yes"), no = $("no");
+  let tries = 0;
+
+  function dodge(e) {
+    if (e) e.preventDefault();
+    tries++;
+    no.textContent = isi.tolak[Math.min(tries - 1, isi.tolak.length - 1)];
+    yes.style.transform = "scale(" + Math.min(1 + tries * 0.12, 1.7) + ")";
+    if (tries > isi.tolak.length + 1) { no.style.opacity = "0"; no.style.pointerEvents = "none"; return; }
+    if (reduceMotion) return;
+    if (!no.classList.contains("flee")) {
+      // Move to <body> so position:fixed isn't trapped by the section's transform animation.
+      const start = no.getBoundingClientRect();
+      no.style.left = start.left + "px";
+      no.style.top = start.top + "px";
+      no.classList.add("flee");
+      document.body.appendChild(no);
+      no.getBoundingClientRect(); // commit start position so the jump animates
+    }
+    const pad = 16, r = no.getBoundingClientRect();
+    const maxX = innerWidth - r.width - pad, maxY = innerHeight - r.height - pad;
+    const y = yes.getBoundingClientRect();
+    let x, top, guard = 0;
+    do { // keep clear of the Iya button
+      x = pad + Math.random() * Math.max(0, maxX - pad);
+      top = pad + Math.random() * Math.max(0, maxY - pad);
+    } while (guard++ < 20 && x < y.right + 10 && x + r.width > y.left - 10 && top < y.bottom + 10 && top + r.height > y.top - 10);
+    no.style.left = x + "px";
+    no.style.top = top + "px";
+  }
+  no.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") dodge(); });
+  no.addEventListener("pointerdown", e => { if (e.pointerType === "mouse") e.preventDefault(); else dodge(e); });
+  no.addEventListener("click", e => { e.preventDefault(); if (e.detail === 0) dodge(); }); // keyboard Enter/Space only
+
+  yes.addEventListener("click", () => {
+    no.remove();
+    hearts(28);
+    show("pick");
+  });
+
+  // --- Pick ---
+  let act = null, day = null;
+  function single(container, items, render, onPick) {
+    items.forEach(item => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-pressed", "false");
+      render(b, item);
+      b.addEventListener("click", () => {
+        container.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false"));
+        b.setAttribute("aria-pressed", "true");
+        onPick(item);
+      });
+      container.appendChild(b);
+    });
+  }
+  single($("acts"), isi.aktivitas, (b, a) => {
+    b.className = "opt";
+    b.innerHTML = '<span class="ico" aria-hidden="true"></span><span class="lbl"></span>';
+    b.querySelector(".ico").textContent = a.ico;
+    b.querySelector(".lbl").textContent = a.lbl;
+  }, a => { act = a; ready(); });
+  single($("days"), isi.hari, (b, d) => { b.className = "chip"; b.textContent = d; }, d => { day = d; ready(); });
+  function ready() { $("next").disabled = !(act && day); }
+
+  $("next").addEventListener("click", () => {
+    const note = $("note").value.trim();
+    $("t-act").textContent = act.ico + " " + act.lbl;
+    $("t-day").textContent = day;
+    $("t-note").textContent = note;
+    $("t-note-wrap").hidden = !note;
+    hearts(18);
+    show("done");
+  });
+  $("back").addEventListener("click", () => show("pick"));
+
+  // --- Send ---
+  function summary() {
+    const note = $("note").value.trim();
+    return "Aku mau! 🥰\nAcara: " + act.lbl + "\nKapan: " + day + (note ? "\nRequest: " + note : "") + "\n– " + isi.penerima;
+  }
+  $("send").addEventListener("click", async () => {
+    const text = summary();
+    if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+      try { await navigator.share({ text }); return; } catch (err) { if (err.name === "AbortError") return; }
+    }
+    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+  });
+
+  // --- Floating hearts ---
+  function hearts(n) {
+    if (reduceMotion) return;
+    const box = $("hearts"), glyphs = ["💗", "💕", "❤️", "🌸", "✨"];
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("span");
+      s.textContent = glyphs[i % glyphs.length];
+      s.style.left = Math.random() * 100 + "vw";
+      s.style.fontSize = 16 + Math.random() * 18 + "px";
+      s.style.animationDelay = Math.random() * 0.8 + "s";
+      s.style.setProperty("--d", 2.4 + Math.random() * 1.6 + "s");
+      s.style.setProperty("--x", (Math.random() * 120 - 60) + "px");
+      s.style.setProperty("--r", (Math.random() * 80 - 40) + "deg");
+      s.addEventListener("animationend", () => s.remove());
+      box.appendChild(s);
+    }
+  }
+</script>
+</html>
