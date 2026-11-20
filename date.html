@@ -129,6 +129,14 @@
     min-height: 44px; padding: 0 16px; border-radius: 999px;
     border: 1.5px solid var(--line); background: var(--card); color: var(--ink); font-weight: 600;
   }
+  .date-pick { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; color: var(--muted); font-weight: 600; }
+  .date-pick[hidden] { display: none; }
+  .date-pick input {
+    min-height: 44px; padding: 0 14px; font: inherit; font-weight: 600;
+    background: var(--card); color: var(--ink);
+    border: 1.5px solid var(--accent); border-radius: 12px;
+  }
+  .date-pick input:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
   textarea {
     width: 100%; min-height: 72px; resize: vertical;
     background: var(--card); color: var(--ink);
@@ -208,6 +216,10 @@
     <div class="grid" id="acts"></div>
     <h2>Kapan?</h2>
     <div class="chips" id="days"></div>
+    <label class="date-pick" id="date-wrap" hidden>
+      <span>Tanggalnya:</span>
+      <input type="date" id="date">
+    </label>
     <h2>Ada request?</h2>
     <textarea id="note" maxlength="200" placeholder="Opsional. Misal: tempatnya yang ada dessert-nya ya"></textarea>
     <div class="actions">
@@ -254,7 +266,8 @@
       { ico: "🍢", lbl: "Kulineran" },
       { ico: "✨", lbl: "Terserah kamu" }
     ],
-    hari: ["Jumat malam", "Sabtu", "Minggu", "Kamu yang tentuin"],
+    hari: ["Jumat malam", "Sabtu", "Minggu", "📅 Pilih tanggal", "Kamu yang tentuin"],
+    pilihTanggal: "📅 Pilih tanggal", // chip that opens the date picker
     tolak: ["Yakin?", "Coba pikir lagi", "Masa sih 🥺", "Sekali lagi deh", "Tombolnya capek", "Udah, pencet Iya aja"]
   };
 
@@ -336,7 +349,23 @@
     b.querySelector(".ico").textContent = a.ico;
     b.querySelector(".lbl").textContent = a.lbl;
   }, a => { act = a; ready(); });
-  single($("days"), isi.hari, (b, d) => { b.className = "chip"; b.textContent = d; }, d => { day = d; ready(); });
+  const dateInput = $("date");
+  const pad2 = n => String(n).padStart(2, "0");
+  const now = new Date();
+  dateInput.min = now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate());
+  function fromDate() {
+    if (!dateInput.value) return null;
+    const [y, m, d] = dateInput.value.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  }
+  single($("days"), isi.hari, (b, d) => { b.className = "chip"; b.textContent = d; }, d => {
+    const picking = d === isi.pilihTanggal;
+    $("date-wrap").hidden = !picking;
+    if (picking) { day = fromDate(); dateInput.focus(); if (dateInput.showPicker) try { dateInput.showPicker(); } catch (e) {} }
+    else day = d;
+    ready();
+  });
+  dateInput.addEventListener("change", () => { day = fromDate(); ready(); });
   function ready() { $("next").disabled = !(act && day); }
 
   $("next").addEventListener("click", () => {
